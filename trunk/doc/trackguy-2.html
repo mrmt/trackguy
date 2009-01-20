@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>TrackGuy マニュアル: インストール</TITLE>
+ <LINK HREF="trackguy-3.html" REL=next>
+ <LINK HREF="trackguy-1.html" REL=previous>
+ <LINK HREF="trackguy.html#toc2" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="trackguy-3.html">次のページ</A>
+<A HREF="trackguy-1.html">前のページ</A>
+<A HREF="trackguy.html#toc2">目次へ</A>
+<HR>
+<H2><A NAME="s2">2. インストール</A></H2>
+
+<P>ここでは、<CODE>/var/www/bug</CODE> 以下に TrackGuy の実行環境を
+つくるものとします。
+<P>
+<H2><A NAME="ss2.1">2.1 Perl の設定</A>
+</H2>
+
+<P>Perl 5.005 以降がインストールされていることを確認します。
+Perl のバージョンは <CODE>perl -v</CODE> を実行すると表示されます。
+<P>Perl の実行ファイルが <CODE>/usr/bin/perl</CODE> にあることを確認してください。
+この場所にない場合は、シンボリック・リンクを張るか、
+TrackGuy を構成する Perl スクリプトの一行目にある
+<CODE>#!/usr/bin/perl</CODE> の記述を現状に合わせてください。
+<P>
+<P>さらに、Jcode.pm をインストールします。
+<CODE>perl -e 'use Jcode'</CODE> を実行してみて、何のエラーやメッセージも
+出ない場合は、そのシステムには正常に Jcode.pm がインストールされて
+いるものと思われます。
+さもなければ、
+<A HREF="http://www.cpan.org/">http://www.cpan.org/</A> などから入手してインストールしてください。
+<P>Debian GNU/Linux の場合は <CODE>libjcode-pm-perl</CODE> パッケージとして
+Jcode.pm が提供されていますので、
+システム管理者権限にて <CODE>apt-get install libjcode-pm-perl</CODE> として
+インストールしてください。
+<P>
+<H2><A NAME="ss2.2">2.2 Web サーバの設定</A>
+</H2>
+
+<P>お使いの Web サーバで、<CODE>/var/www/bug</CODE> が http アクセスを
+通して見えるようにし、拡張子 *.cgi のファイルが CGI として認識され、
+動作するように設定してください。
+<P>また、ディレクトリに対してアクセスした際に、<CODE>index.cgi</CODE> が
+デフォルトの文書として扱われるよう設定することをお勧めします。
+<P>以下、apache 1.3 を web サーバとして使うものと仮定し、
+<CODE>httpd.conf</CODE> の設定例を以下に示します。お使いの環境に応じて
+適宜設定してください。
+<P>
+<PRE>
+AddHandler cgi-script .cgi
+&lt;Directory /var/www/bug&gt;
+Options ExecCGI
+DirectoryIndex index.cgi
+&lt;/Directory&gt;
+</PRE>
+<P>以下、<CODE>www.foo.co.jp</CODE> というホストの web サーバの設定がなされ、
+<CODE>http://www.foo.co.jp/bug/</CODE> にアクセスすると
+<CODE>/var/www/bug</CODE> 以下が見えるものとします。
+<P>
+<H2><A NAME="ss2.3">2.3 TrackGuy の展開</A>
+</H2>
+
+<P><CODE>/var/www/bug</CODE> に TrackGuy のアーカイブを展開します。
+<P>
+<H2><A NAME="ss2.4">2.4 最低限必要な TrackGuy の設定</A>
+</H2>
+
+<P>TrackGuy の各種設定は、TrackGuy を展開したディレクトリの
+<CODE>lib/trackguy.conf</CODE> の中身を変更することで行えます。
+以下、このファイルを trackguy.conf と称します。
+<P>基本的には、trackguy.conf の中に記述してあるデフォルト値を
+適宜書き換えていくだけですが、perl スクリプトとして評価される
+ファイルですので、perl 文法から外れないように気をつけてください。
+<P>以下の設定が終ったら、<CODE>http://www.foo.co.jp/bug/</CODE> にアクセスして、
+デフォルトの TrackGuy トップページ
+<CODE>/var/www/bug/index.cgi</CODE> が出現することを確認してください。
+<P>うまく動作しない場合は、Web サーバが出すエラーログを参照してください。
+例えば、Debian GNU/Linux の apache の場合は、デフォルト設定では
+<CODE>/var/log/apache/error.log</CODE> にエラーログがありますので、これを
+<CODE>tail -f</CODE> で監視するとよいでしょう。
+<P>
+<H3>トップページの url ($top_uri)</H3>
+
+<P>trackguy.conf の <CODE>$top_uri</CODE> を編集します。
+<CODE>http://www.foo.co.jp/bug/</CODE> を TrackGuy のトップページにする場合なら、
+<CODE>$top_uri = 'http://www.foo.co.jp/bug'</CODE> としてください。
+末尾の <CODE>/</CODE> は書かないでください。
+<P>
+<H3>データのディレクトリ ($data_dir)</H3>
+
+<P>trackguy.conf のバグ報告データが収められるディレクトリを指定します。
+<CODE>/var/www/bug</CODE> に展開した場合なら、
+<CODE>/var/www/bug/data</CODE> という空ディレクトリができているはずです。
+これがデータの入るディレクトリになります。
+<P>trackguy プログラムである <CODE>index.cgi</CODE> が動作するユーザ権限で、
+このディレクトリを読み書き可能であることを確認してください。
+必要に応じて、ディレクトリの owner を CGI が動作するユーザに変更してください。
+<P>例: <CODE>chown -R www-data.www-data data</CODE>
+<P>
+<H3>最後のバグ番号収納ファイル ($last_br_no_file)</H3>
+
+<P>TrackGuy の最後(最新)のバグ番号が記録されるファイルです。
+<CODE>/var/www/bug</CODE> に展開した場合なら、
+<CODE>/var/www/bug/data/lastbr</CODE> で結構です。
+<P>trackguy プログラムである <CODE>index.cgi</CODE> が動作するユーザ権限で、
+このファイルが読み書き可能であることを確認してください。
+<P>(参考: ひとつのサイトで複数の TrackGuy を使う場合、このファイル
+へのパスを TrackGuy 間で揃えておくと、バグ番号が unique に保たれます)
+<P>
+<HR>
+<A HREF="trackguy-3.html">次のページ</A>
+<A HREF="trackguy-1.html">前のページ</A>
+<A HREF="trackguy.html#toc2">目次へ</A>
+</BODY>
+</HTML>

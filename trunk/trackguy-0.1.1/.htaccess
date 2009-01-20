@@ -1,0 +1,3 @@
+# $Id: .htaccess,v 1.2 2000/07/28 01:42:36 morimoto Exp $
+DirectoryIndex index.cgi
+# EOF
