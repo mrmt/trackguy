@@ -1,0 +1,17 @@
+/* $Id: trackguy.css,v 1.1 2000/08/05 13:06:20 morimoto Exp $ */
+
+body{
+	background: #fff;
+	font-size: 10pt;
+}
+form {
+	margin-bottom: 0pt;
+}
+pre{
+	border-width: 1px;
+	border-color: #cca;
+	font-size: 10 pt;
+	white-space: pre; /* Netscape 4.x needs it */
+}
+
+/* EOF */

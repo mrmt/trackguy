@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>TrackGuy マニュアル: さらに進んだ設定</TITLE>
+ <LINK HREF="trackguy-5.html" REL=next>
+ <LINK HREF="trackguy-3.html" REL=previous>
+ <LINK HREF="trackguy.html#toc4" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="trackguy-5.html">次のページ</A>
+<A HREF="trackguy-3.html">前のページ</A>
+<A HREF="trackguy.html#toc4">目次へ</A>
+<HR>
+<H2><A NAME="s4">4. さらに進んだ設定</A></H2>
+
+<P>
+<P>
+<H2><A NAME="ss4.1">4.1 イントラネットで便利に使う</A>
+</H2>
+
+<P>
+<H3>特定のメールドメインだけを対象とする ($hidden_local_domain)</H3>
+
+<P>たとえば Foo 株式会社のイントラネット・サーバに TrackGuy を設置し、
+<CODE>名前@foo.co.jp</CODE> というメールアドレスしか使わないことがわかっている
+場合、人の指定 (メールアドレスの指定) から、メールドメインを一切省略する
+ことができます。
+<P>trackguy.conf の
+<CODE>$hidden_local_domain</CODE> に <CODE>'@foo.co.jp'</CODE> を指定してください。
+<P>
+<H2><A NAME="ss4.2">4.2 見ための設定</A>
+</H2>
+
+<P>
+<P>
+<H3>トップページの前振り文句 ($motd)</H3>
+
+<P>絞り込み指定なしに TrackGuy トップページにアクセスした際に
+ページ頭に表示する文字列を指定します。
+<P>
+<H3>各ページの前振り文句 ($issue)</H3>
+
+<P>TrackGuy 各ページにアクセスした際に
+ページ頭に表示する文字列を指定します。
+<P>
+<H3>トップページのタイトル ($title)</H3>
+
+<P>TrackGuy のトップページのタイトルを設定できます。
+<P>
+<H3>タイトルの前置文字列 ($title_prefix)</H3>
+
+<P>TrackGuy の各ページのタイトルの prefix を設定できます。
+空文字列を指定すると、prefix は付きません。
+<P>
+<H3>CSS ファイルの指定 ($css_uri)</H3>
+
+<P>TrackGuy の各ページが参照する CSS (Cascading Style Sheet) ファイル
+を指定します。<CODE>index.cgi</CODE> からの相対 uri で指定します。絶対
+uri でも構いません。
+空文字列を指定すると、CSS 指定は付きません。
+<P>
+<H3>各ページのトップメニュー ($top_menu)</H3>
+
+<P>TrackGuy 各ページにアクセスした際に
+ページ頭に表示されるトップメニューの内容を HTML で指定します。
+<P>
+<H3>各ページのフッタ ($page_footer)</H3>
+
+<P>TrackGuy 各ページのフッタを HTML で指定します。
+<P>
+<H2><A NAME="ss4.3">4.3 メール送信関係の設定</A>
+</H2>
+
+<P>
+<P>
+<H3>エラー時の送信先 ($errors_to)</H3>
+
+<P>TrackGuy からメールを送信する際の、デフォルトで設定される Errors-To: 
+の宛先。
+エラーメールを postmaster 以外のユーザに送りたい場合に指定します。
+必要なければ空文字列でも構いません。
+<P>
+<H3>メールの差出人名義 ($default_from)</H3>
+
+<P>TrackGuy からメールを送信する際の差出人名義.
+<P>
+<H2><A NAME="ss4.4">4.4 検索機能の設定</A>
+</H2>
+
+<P>
+<P>
+<H3>namazu.cgi の位置 ($namazu_uri)</H3>
+
+<P>Namazu による全文検索を使う場合、その uri を指定します。
+<P>
+<P>
+<HR>
+<A HREF="trackguy-5.html">次のページ</A>
+<A HREF="trackguy-3.html">前のページ</A>
+<A HREF="trackguy.html#toc4">目次へ</A>
+</BODY>
+</HTML>

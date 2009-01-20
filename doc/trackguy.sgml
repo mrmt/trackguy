@@ -1,0 +1,281 @@
+<!doctype linuxdoc system>
+
+<article>
+<title>TrackGuy マニュアル
+<author>森本 淳 &lt;morimoto@xantia.citroen.org&gt;</author>
+<date>2000/12/20
+<abstract>
+バグ・トラッキング・システム TrackGuy の説明書です。
+</abstract>
+<toc>
+
+<sect>TrackGuy とは
+<p>
+簡単にインストール、運用できることを目指した BTS
+(バグ・トラッキング・システム) です。
+使い方、データ構造を極力シンプルにしています。
+
+ソフトウェア開発に限らず、複数名で共同作業を行う際に一番重要なのは
+情報の円滑な共有です。
+特定のスキルがないと報告も閲覧もできないような BTS は、
+結局特定の人にしか利用されません。すなわち、なんら情報の共有につながりません。
+TrackGuy は、豊富な機能の追求や実装よりも、運用者と利用者の敷居の低さを
+重んじています。
+
+<sect1>特徴
+<p>
+to be written ...
+
+<sect1>入手
+<p>
+<url url="http://trackguy.mrmt.net/"> からダウンロードできます。
+
+<sect1>動作環境
+<p>
+Perl の 5.005 以降と Jcode.pm, cgi を実行できる Web Server が
+あれば動作するはずです。
+2000/12/20 現在、
+Debian GNU/Linux 2.2, apache 1.3.9, perl 5.005_03 の環境で
+動作を確認しています。
+
+必要に応じて、メールを送信できる環境 (sendmail, IM の imput, postfix 
+といった MTA) も揃えてください。
+
+<sect>インストール
+
+<p>
+ここでは、<tt>/var/www/bug</tt> 以下に TrackGuy の実行環境を
+つくるものとします。
+
+<sect1>Perl の設定
+
+<p>
+Perl 5.005 以降がインストールされていることを確認します。
+Perl のバージョンは <tt>perl -v</tt> を実行すると表示されます。
+
+Perl の実行ファイルが <tt>/usr/bin/perl</tt> にあることを確認してください。
+この場所にない場合は、シンボリック・リンクを張るか、
+TrackGuy を構成する Perl スクリプトの一行目にある
+<tt>#!/usr/bin/perl</tt> の記述を現状に合わせてください。
+
+<p>
+さらに、Jcode.pm をインストールします。
+<tt>perl -e 'use Jcode'</tt> を実行してみて、何のエラーやメッセージも
+出ない場合は、そのシステムには正常に Jcode.pm がインストールされて
+いるものと思われます。
+さもなければ、
+<url url="http://www.cpan.org/"> などから入手してインストールしてください。
+
+Debian GNU/Linux の場合は <tt/libjcode-pm-perl/ パッケージとして
+Jcode.pm が提供されていますので、
+システム管理者権限にて <tt/apt-get install libjcode-pm-perl/ として
+インストールしてください。
+
+<sect1>Web サーバの設定
+<p>
+お使いの Web サーバで、<tt>/var/www/bug</tt> が http アクセスを
+通して見えるようにし、拡張子 *.cgi のファイルが CGI として認識され、
+動作するように設定してください。
+
+また、ディレクトリに対してアクセスした際に、<tt/index.cgi/ が
+デフォルトの文書として扱われるよう設定することをお勧めします。
+
+以下、apache 1.3 を web サーバとして使うものと仮定し、
+<tt/httpd.conf/ の設定例を以下に示します。お使いの環境に応じて
+適宜設定してください。
+
+<verb>
+AddHandler cgi-script .cgi
+&lt;Directory /var/www/bug&gt;
+Options ExecCGI
+DirectoryIndex index.cgi
+&lt;/Directory&gt;
+</verb>
+
+以下、<tt/www.foo.co.jp/ というホストの web サーバの設定がなされ、
+<tt>http://www.foo.co.jp/bug/</tt> にアクセスすると
+<tt>/var/www/bug</tt> 以下が見えるものとします。
+
+<sect1>TrackGuy の展開
+<p>
+<tt>/var/www/bug</tt> に TrackGuy のアーカイブを展開します。
+
+<sect1>最低限必要な TrackGuy の設定
+<p>
+TrackGuy の各種設定は、TrackGuy を展開したディレクトリの
+<tt>lib/trackguy.conf</tt> の中身を変更することで行えます。
+以下、このファイルを trackguy.conf と称します。
+
+基本的には、trackguy.conf の中に記述してあるデフォルト値を
+適宜書き換えていくだけですが、perl スクリプトとして評価される
+ファイルですので、perl 文法から外れないように気をつけてください。
+
+以下の設定が終ったら、<tt>http://www.foo.co.jp/bug/</tt> にアクセスして、
+デフォルトの TrackGuy トップページ
+<tt>/var/www/bug/index.cgi</tt> が出現することを確認してください。
+
+うまく動作しない場合は、Web サーバが出すエラーログを参照してください。
+例えば、Debian GNU/Linux の apache の場合は、デフォルト設定では
+<tt>/var/log/apache/error.log</tt> にエラーログがありますので、これを
+<tt/tail -f/ で監視するとよいでしょう。
+
+<sect2>トップページの url ($top_uri)
+<p>
+trackguy.conf の <tt/$top_uri/ を編集します。
+<tt>http://www.foo.co.jp/bug/</tt> を TrackGuy のトップページにする場合なら、
+<tt>$top_uri = 'http://www.foo.co.jp/bug'</tt> としてください。
+末尾の <tt>/</tt> は書かないでください。
+
+<sect2>データのディレクトリ ($data_dir)
+<p>
+trackguy.conf のバグ報告データが収められるディレクトリを指定します。
+<tt>/var/www/bug</tt> に展開した場合なら、
+<tt>/var/www/bug/data</tt> という空ディレクトリができているはずです。
+これがデータの入るディレクトリになります。
+
+trackguy プログラムである <tt/index.cgi/ が動作するユーザ権限で、
+このディレクトリを読み書き可能であることを確認してください。
+必要に応じて、ディレクトリの owner を CGI が動作するユーザに変更してください。
+
+例: <tt/chown -R www-data.www-data data/
+
+<sect2>最後のバグ番号収納ファイル ($last_br_no_file)
+<p>
+TrackGuy の最後(最新)のバグ番号が記録されるファイルです。
+<tt>/var/www/bug</tt> に展開した場合なら、
+<tt>/var/www/bug/data/lastbr</tt> で結構です。
+
+trackguy プログラムである <tt/index.cgi/ が動作するユーザ権限で、
+このファイルが読み書き可能であることを確認してください。
+
+(参考: ひとつのサイトで複数の TrackGuy を使う場合、このファイル
+へのパスを TrackGuy 間で揃えておくと、バグ番号が unique に保たれます)
+
+<sect>カスタマイズ
+<p>
+バグ・トラッキング・システムは、
+対象となる業務やプロジェクトに合わせてカスタマイズしないと
+運用する意味がありません。以下にカスタマイズの方法を示します。
+
+<sect1>分類、部署を定義する (%categories_table)
+<p>
+trackguy.conf の
+<tt/%categories_table/ というハッシュ変数に定義します。
+デフォルトでは以下のようになっています:
+
+<verb>
+    ('cat_av_dev' => '開発',
+     'cat_av_prod' => '制作',
+     'cat_av_sales' => 'マーケッティング',
+     'cat_bts' => 'ユーザサポート',
+     'cat_misc' => 'その他');
+</verb>
+
+左側のシンボル名は、英数字でつけることを推奨します。
+
+<sect1>ページのヘッダ、フッタ
+<p>
+
+<sect1>全文検索機能
+<p>
+...
+
+<sect>さらに進んだ設定
+<p>
+
+<sect1>イントラネットで便利に使う
+<p>
+<sect2>特定のメールドメインだけを対象とする ($hidden_local_domain)
+<p>
+たとえば Foo 株式会社のイントラネット・サーバに TrackGuy を設置し、
+<tt>名前@foo.co.jp</tt> というメールアドレスしか使わないことがわかっている
+場合、人の指定 (メールアドレスの指定) から、メールドメインを一切省略する
+ことができます。
+
+trackguy.conf の
+<tt/$hidden_local_domain/ に <tt/'@foo.co.jp'/ を指定してください。
+
+<sect1>見ための設定
+<p>
+
+<sect2>トップページの前振り文句 ($motd)
+<p>
+絞り込み指定なしに TrackGuy トップページにアクセスした際に
+ページ頭に表示する文字列を指定します。
+
+<sect2>各ページの前振り文句 ($issue)
+<p>
+TrackGuy 各ページにアクセスした際に
+ページ頭に表示する文字列を指定します。
+
+<sect2>トップページのタイトル ($title)
+<p>
+TrackGuy のトップページのタイトルを設定できます。
+
+<sect2>タイトルの前置文字列 ($title_prefix)
+<p>
+TrackGuy の各ページのタイトルの prefix を設定できます。
+空文字列を指定すると、prefix は付きません。
+
+<sect2>CSS ファイルの指定 ($css_uri)
+<p>
+TrackGuy の各ページが参照する CSS (Cascading Style Sheet) ファイル
+を指定します。<tt/index.cgi/ からの相対 uri で指定します。絶対
+uri でも構いません。
+空文字列を指定すると、CSS 指定は付きません。
+
+<sect2>各ページのトップメニュー ($top_menu)
+<p>
+TrackGuy 各ページにアクセスした際に
+ページ頭に表示されるトップメニューの内容を HTML で指定します。
+
+<sect2>各ページのフッタ ($page_footer)
+<p>
+TrackGuy 各ページのフッタを HTML で指定します。
+
+<sect1>メール送信関係の設定
+<p>
+
+<sect2>エラー時の送信先 ($errors_to)
+<p>
+TrackGuy からメールを送信する際の、デフォルトで設定される Errors-To: 
+の宛先。
+エラーメールを postmaster 以外のユーザに送りたい場合に指定します。
+必要なければ空文字列でも構いません。
+
+<sect2>メールの差出人名義 ($default_from)
+<p>
+TrackGuy からメールを送信する際の差出人名義.
+
+<sect1>検索機能の設定
+<p>
+
+<sect2>namazu.cgi の位置 ($namazu_uri)
+<p>
+Namazu による全文検索を使う場合、その uri を指定します。
+
+
+<sect>To Do
+<p>
+
+<itemize>
+<item>キャッシュ機構
+<item>古いデータの expire
+<item>時計アイコンのかきなおし
+<item>マイルストーンの実装
+</itemize>
+
+<p>
+
+<itemize>
+<item>メールからも報告を受け付ける
+<item>メールでも返答を受け付ける
+<item>バグ曲線を描く
+<item>周辺ユーティリティ
+<item>Ruby で書き直す?
+<item>もっと抽象化
+</itemize>
+
+</article>
+
+</article>
